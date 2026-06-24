@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHPC | The Professional Standard in Clinic Security</title>
+    <style>
+        :root {
+            --doctor-teal: #0B7B7B;
+            --cme-navy: #1A5F9A;
+            --manager-purple: #5A3A8A;
+            --staff-amber: #A85C00;
+            --patient-green: #1A6B45;
+            --red-alert: #B32A2A;
+            --navy-deep: #0A1628;
+            --mist: #F5F7F8;
+            --white: #FFFFFF;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 0; background-color: var(--mist); color: #333; line-height: 1.5;
+        }
+        .container { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100vh; overflow: hidden; }
+        
+        .hero { 
+            background: linear-gradient(155deg, var(--navy-deep) 0%, #112240 100%); 
+            color: white; padding: 50px 24px; text-align: center; position: relative;
+        }
+        .hero h1 { font-size: 28px; line-height: 1.2; margin: 0; font-weight: 900; }
+        .hero p { color: #0EA5A5; margin-top: 10px; font-size: 14px; letter-spacing: 1px; font-weight: 600; }
+
+        .timeline-section { padding: 30px 24px; }
+        .timeline-item { position: relative; padding-left: 30px; border-left: 2px dashed #DDD; margin-bottom: 25px; }
+        .timeline-item::before { 
+            content: ''; position: absolute; left: -7px; top: 0; 
+            width: 12px; height: 12px; border-radius: 50%; background: var(--red-alert);
+        }
+        .date-badge { font-weight: 900; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
+        .stopwatch { background: #FFF4F4; border: 1px solid var(--red-alert); color: var(--red-alert); padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+
+        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 24px; }
+        .role-card { padding: 15px; border-radius: 12px; color: white; text-align: center; }
+        .card-doctor { background: var(--doctor-teal); }
+        .card-cme { background: var(--cme-navy); }
+        .card-manager { background: var(--manager-purple); }
+        .card-staff { background: var(--staff-amber); }
+        .card-patient { background: var(--patient-green); grid-column: span 2; }
+
+        .risk-map { background: #FFF5F5; border: 1px solid #FFDEDE; border-radius: 12px; padding: 20px; margin: 0 24px; }
+        .warning-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .app-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+        .flow-viz { background: var(--navy-deep); color: white; padding: 30px 24px; text-align: center; margin-top: 30px; }
+        .flow-step { border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+        .flow-arrow { font-size: 20px; color: var(--doctor-teal); margin: 5px 0; }
+
+        .cta-button { 
+            display: block; margin: 30px 24px; padding: 16px; background: var(--doctor-teal); 
+            color: white; text-align: center; text-decoration: none; border-radius: 12px; font-weight: 800;
+            box-shadow: 0 4px 15px rgba(11, 123, 123, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Secure Your Practice,<br>Protect Your Patients</h1>
+            <p>THE PHPC STANDARD</p>
+        </div>
+
+        <div class="timeline-section">
+            <h2 style="font-size: 18px; margin-bottom: 20px;">The Burning Reality</h2>
+            <div class="timeline-item">
+                <div class="date-badge" style="color: var(--red-alert);">MAY 2023</div>
+                <strong>Private Clinic Data Incident</strong><br>
+                <span style="font-size: 13px; color: #666;">100,000 patient records compromised in a major private clinic breach.</span>
+            </div>
+            
+            <div class="timeline-item" style="border-left-color: var(--doctor-teal);">
+                <div class="date-badge" style="color: var(--doctor-teal);">OCTOBER 13, 2025</div>
+                <strong>Regulatory Commencement</strong><br>
+                <span style="font-size: 13px; color: #666;">DH began accepting clinic license applications under Cap. 633.</span>
+                <div class="stopwatch">
+                    <span style="font-size: 24px;">⏱️</span>
+                    <span style="font-size: 12px; font-weight: 700;">Inspection Readiness: CMEs must now demonstrate data security protocols to the DH.</span>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="date-badge" style="color: var(--red-alert);">APRIL 2026</div>
+                <strong>Hospital Authority Breach</strong><br>
+                <span style="font-size: 13px; color: #666;">56,000+ records leaked from the public sector, proving no platform is immune.</span>
+            </div>
+        </div>
+
+        <h2 style="padding: 0 24px; font-size: 18px;">One Platform. Total Value.</h2>
+        <div class="role-grid">
+            <div class="role-card card-doctor"><strong>Doctor</strong><br><span style="font-size: 10px;">Security</span></div>
+            <div class="role-card card-cme"><strong>CME</strong><br><span style="font-size: 10px;">Compliance</span></div>
+            <div class="role-card card-manager"><strong>Manager</strong><br><span style="font-size: 10px;">Efficiency</span></div>
+            <div class="role-card card-staff"><strong>Staff</strong><br><span style="font-size: 10px;">Focus</span></div>
+            <div class="role-card card-patient"><strong>The Patient</strong><br><span style="font-size: 11px;">"46% prioritize managing health online"</span></div>
+        </div>
+
+        <div class="risk-map">
+            <h3 style="margin-top: 0; font-size: 16px; color: var(--red-alert);">Eliminate the "Human Factor"</h3>
+            <div class="warning-box">
+                <div class="app-icon" style="background: #25D366; color: white;">💬</div>
+                <div style="font-size: 12px;"><strong>Risky Personal Channels:</strong> Stop staff from handling patient IDs or clinical photos on personal WhatsApp/WeChat.</div>
+            </div>
+            <div style="background: white; padding: 12px; border-radius: 8px; font-size: 12px; border: 1px solid #EEE;">
+                ✅ <strong>PHPC Shield:</strong> Patient data bypasses staff devices entirely and moves directly to your encrypted clinic folder.
+            </div>
+        </div>
+
+        <div class="flow-viz">
+            <h3 style="margin-top: 0; font-size: 15px; color: var(--doctor-teal);">Secure Data Flow (Zero-Touch)</h3>
+            <div class="flow-step">🧑 Patient: Self-Booking / Photo Upload</div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step" style="border-color: var(--doctor-teal);">🔐 PHPC Portal (AES-256 Encrypted)</div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">🖥️ Clinic CMS: Sync Direct to Patient File</div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">👨‍⚕️ Doctor: Review Securely on Request</div>
+            <p style="font-size: 10px; color: #7A9AAA; margin-top: 15px;">Powered by ASL: 50+ Years of Gov Healthcare IT legacy.</p>
+        </div>
+
+        <a href="mailto:IrisPhpc@gmail.com?subject=Pilot Partner Enquiry" class="cta-button">Join the Pilot (First 20 Clinics) →</a>
+        
+        <div style="text-align: center; padding-bottom: 40px; font-size: 11px; color: #999;">
+            Pilot Partner Status: First 6 Months Waived
+        </div>
+    </div>
+</body>
+</html>
