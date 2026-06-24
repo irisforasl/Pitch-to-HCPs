@@ -3,129 +3,825 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHPC | Secure Your Practice, Protect Your Patients</title>
+    <title>The PHPC Standard | Secure Your Practice, Protect Your Patients</title>
     <style>
         :root {
-            --navy: #0A1628;
-            --teal: #0B7B7B;
-            --teal-bright: #0EA5A5;
-            --red: #B32A2A;
-            --slate: #3D5166;
-            --mist: #F5F7F8;
-            --white: #FFFFFF;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 0; background-color: var(--navy); color: var(--white); line-height: 1.6;
-        }
-        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
-        
-        .hero { text-align: center; padding: 40px 0 20px; }
-        .hero h1 { font-size: 26px; line-height: 1.2; font-weight: 800; margin: 0; }
-        .hero p { color: var(--teal-bright); font-weight: 600; font-size: 14px; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  navy:    "#0A1628",
+  navyMid: "#112240",
+  teal:    "#0B7B7B",
+  tealBrt: "#0EA5A5",
+  tealDim: "#E4F4F4",
+  tealPale:"#F0FAFA",
+  slate:   "#3D5166",
+  slateLight:"#6A8898",
+  mist:    "#F5F7F8",
+  mistBlue:"#EEF4F7",
+  white:   "#FFFFFF",
+  border:  "#D4E0E8",
+  ink:     "#141E2A",
+  red:     "#B32A2A",
+  redDim:  "#FEF3F3",
+  amber:   "#8F5000",
+  amberDim:"#FDF6ED",
+  green:   "#1A6B45",
+  greenDim:"#EBF5EE",
+  purple:  "#5A3A8A",
+  purpleDim:"#F2EEF9",
+};
 
-        .section-header { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin: 30px 0 15px; }
-        .section-header h2 { font-size: 18px; color: var(--teal-bright); margin: 0; }
-        
-        .timeline-card { background: rgba(255,255,255,0.05); border-left: 4px solid var(--red); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
-        .timeline-date { font-weight: 800; font-size: 12px; color: #FF9999; margin-bottom: 5px; }
-        .timeline-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; }
-        .timeline-body { font-size: 13px; color: #C0D4E0; margin-bottom: 8px; }
-        .source-link { font-size: 10px; color: #7A9AAA; text-decoration: none; }
+const KEY_C  = [T.teal, "#1A5F9A", T.purple, T.amber, T.green, T.red];
+const ROLE_C = [T.teal, "#1A5F9A", T.purple, T.amber, T.green];
 
-        .cme-box { background: var(--white); color: var(--navy); padding: 20px; border-radius: 12px; margin: 25px 0; border-top: 5px solid var(--teal); }
-        .cme-box h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--teal); }
-        .cme-box p { font-size: 13px; margin: 0; }
+// ── UTILS ──────────────────────────────────────────────────────────────────
+const useScrollY = () => {
+  const [y, setY] = useState(0);
+  useEffect(() => {
+    const h = () => setY(window.scrollY);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+  return y;
+};
 
-        .pain-point { border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px; background: rgba(11, 123, 123, 0.05); }
-        .pain-point h3 { margin: 0 0 8px 0; font-size: 15px; color: var(--teal-bright); }
-        .pain-point p { font-size: 13px; color: #C0D4E0; margin: 0; }
+const useFade = () => {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: 0.08 });
+    if (ref.current) o.observe(ref.current);
+    return () => o.disconnect();
+  }, []);
+  return [ref, vis];
+};
 
-        .trust-section { text-align: center; padding: 25px; background: rgba(255,255,255,0.03); border-radius: 12px; margin: 30px 0; }
-        .trust-logo { font-weight: 900; font-size: 20px; margin-bottom: 5px; }
-        .trust-text { font-size: 12px; color: #7A9AAA; }
+const Fade = ({ children, delay = 0, style = {} }) => {
+  const [ref, vis] = useFade();
+  return (
+    <div ref={ref} style={{
+      opacity: vis ? 1 : 0,
+      transform: vis ? "translateY(0)" : "translateY(18px)",
+      transition: `opacity 0.55s ease ${delay}s, transform 0.55s ease ${delay}s`,
+      ...style,
+    }}>{children}</div>
+  );
+};
 
-        .cta-box { background: linear-gradient(135deg, var(--teal), #085A5A); padding: 25px; border-radius: 12px; text-align: center; }
-        .cta-box h3 { margin: 0 0 10px 0; font-size: 18px; }
-        .cta-button { display: block; background: var(--white); color: var(--teal); text-decoration: none; padding: 14px; border-radius: 8px; font-weight: 800; margin-bottom: 10px; }
-        
-        .footer { text-align: center; font-size: 10px; color: #3A5060; padding: 30px 0; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="hero">
-            <h1>Secure Your Practice,<br>Protect Your Patients</h1>
-            <p>The PHPC Standard</p>
-        </div>
+const scrollTo = id => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
-        <div class="section-header">
-            <h2>The Burning Reality</h2>
-        </div>
+const SrcLink = ({ href, label = "Source ↗" }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" style={{
+    display: "inline-flex", alignItems: "center", gap: 4,
+    fontSize: 11, fontWeight: 600, color: T.teal,
+    background: T.tealDim, border: `1px solid ${T.teal}30`,
+    borderRadius: 3, padding: "2px 7px", textDecoration: "none",
+    marginTop: 6,
+  }}>{label}</a>
+);
 
-        <div class="timeline-card">
-            <div class="timeline-date">MAY 2023</div>
-            <div class="timeline-title">Major Private Clinic Data Incident</div>
-            <div class="timeline-body">Personal data and medical history of approx. 100,000 patients from a leading private healthcare group were compromised due to a vulnerability.</div>
-            <a href="https://www.scmp.com/news/hong-kong/health-environment/article/3219827/personal-data-medical-history-100000-patients-may-have-been-leaked-cyberattack-hong-kong-healthcare" class="source-link">Source: SCMP</a>
-        </div>
-
-        <div class="timeline-card" style="border-left-color: var(--teal-bright);">
-            <div class="timeline-date" style="color: var(--teal-bright);">OCTOBER 13, 2025</div>
-            <div class="timeline-title">Regulatory Requirements Take Effect</div>
-            <div class="timeline-body">DH started accepting clinic license applications under Cap. 633. CMEs must demonstrate robust security during on-site inspections.</div>
-        </div>
-
-        <div class="timeline-card">
-            <div class="timeline-date">APRIL 2026</div>
-            <div class="timeline-title">Hospital Authority Breach</div>
-            <div class="timeline-body">Over 56,000 patient records from Kowloon East Cluster leaked, highlighting risks to personal health data across sectors.</div>
-            <a href="https://www.info.gov.hk/gia/general/202604/04/P2026040400462.htm" class="source-link">Source: HK Government / HA</a>
-        </div>
-
-        <div class="cme-box">
-            <h3>CME’s Personal Duty</h3>
-            <p>Under <strong>Cap. 633</strong>, Chief Medical Executives hold specific legal responsibility for day-to-day administration, including patient data security standards.</p>
-        </div>
-
-        <div class="section-header">
-            <h2>Solving the ‘Human Factor’</h2>
-        </div>
-
-        <div class="pain-point">
-            <h3>Replace Vulnerable Personal Channels</h3>
-            <p>Eliminate frontline staff handling <strong>Patient Personal Data (text or images)</strong> on personal WhatsApp or WeChat accounts.</p>
-        </div>
-
-        <div class="pain-point">
-            <h3>Encrypted Shield</h3>
-            <p>Directly encrypted clinical channel bypasses staff devices entirely. Patient data reaches the clinic’s secure folder directly.</p>
-        </div>
-
-        <div class="pain-point">
-            <h3>Zero-Touch CMS Sync</h3>
-            <p>Lab results and reports sync directly from your CMS to the portal upon request, removing manual staff handling and error risks.</p>
-        </div>
-
-        <div class="trust-section">
-            <div class="trust-logo">Powered by ASL</div>
-            <div class="trust-text">
-                The technology partner with over 50 years of Hong Kong government healthcare IT expertise.
-                Foundational infrastructure contributor to <strong>HA Go</strong>.
-            </div>
-        </div>
-
-        <div class="cta-box">
-            <h3>Join the Pilot Partner Program</h3>
-            <p style="font-size: 13px; margin-bottom: 20px;">Be among the first 20 clinics to strengthen your readiness for DH inspections. Customize your workflow without development costs.</p>
-            <a href="mailto:IrisPhpc@gmail.com?subject=Pilot Partner Enquiry" class="cta-button">Apply to Join →</a>
-            <p style="font-size: 11px;">Pilot Partner Benefit: First 6 months subscription fully waived</p>
-        </div>
-
-        <div class="footer">
-            © 2026 PHPC Patient Portal Programme<br>
-            Confidential · Not for redistribution
-        </div>
+// ── LOGO ───────────────────────────────────────────────────────────────────
+const Logo = ({ dark = false, size = 1 }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 9 * size, cursor: "pointer" }}
+    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+    <div style={{
+      width: 36 * size, height: 36 * size,
+      background: `linear-gradient(135deg,${T.teal},${T.tealBrt})`,
+      borderRadius: 8 * size, display: "flex", alignItems: "center", justifyContent: "center",
+      flexShrink: 0, boxShadow: `0 2px 14px ${T.teal}40`,
+    }}>
+      <svg width={20 * size} height={20 * size} viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L4 5v5c0 3.5 2.5 6.5 6 7.5C14 16.5 16 13.5 16 10V5L10 2z"
+          fill="white" fillOpacity="0.15" stroke="white" strokeWidth="1.4" />
+        <rect x="7.5" y="9" width="5" height="5" rx="1" fill="white" />
+        <path d="M8.5 9V7.5a1.5 1.5 0 013 0V9" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
     </div>
-</body>
-</html>
+    <div>
+      <div style={{ fontWeight: 900, fontSize: 15 * size, color: dark ? T.ink : T.white, letterSpacing: "-0.01em", lineHeight: 1.1 }}>PHPC</div>
+      <div style={{ fontWeight: 600, fontSize: 9 * size, color: T.teal, letterSpacing: "0.05em", lineHeight: 1, textTransform: "uppercase" }}>Patient Portal</div>
+    </div>
+  </div>
+);
+
+// ── NAV ────────────────────────────────────────────────────────────────────
+const NAV_LINKS = [
+  { l: "The Reality", id: "reality" }, { l: "6 Keys", id: "keys" },
+  { l: "Features", id: "features" }, { l: "Infrastructure", id: "infra" },
+  { l: "Who It's For", id: "who" }, { l: "Pilot", id: "pilot" }, { l: "About", id: "about" },
+];
+
+const Nav = () => {
+  const y = useScrollY();
+  const solid = y > 80;
+  return (
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+      background: solid ? "rgba(255,255,255,0.96)" : "transparent",
+      backdropFilter: solid ? "blur(14px)" : "none",
+      borderBottom: solid ? `1px solid ${T.border}` : "none",
+      transition: "all 0.3s", padding: "0 28px",
+      boxShadow: solid ? "0 2px 16px rgba(0,0,0,0.06)" : "none",
+    }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+        <Logo dark={solid} size={0.88} />
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          {NAV_LINKS.map(n => (
+            <button key={n.id} onClick={() => scrollTo(n.id)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: 12, fontWeight: 600,
+              color: solid ? T.slate : "#ffffffbb",
+              padding: "3px 0", letterSpacing: "0.02em", transition: "color 0.2s",
+            }}
+              onMouseEnter={e => e.target.style.color = solid ? T.ink : "#fff"}
+              onMouseLeave={e => e.target.style.color = solid ? T.slate : "#ffffffbb"}
+            >{n.l}</button>
+          ))}
+          <button onClick={() => scrollTo("pilot")} style={{
+            background: T.teal, color: "#fff", border: "none", borderRadius: 6,
+            padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer",
+            boxShadow: `0 2px 12px ${T.teal}40`, transition: "background 0.2s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = T.tealBrt}
+            onMouseLeave={e => e.currentTarget.style.background = T.teal}
+          >Become a Pilot Partner →</button>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+// ── HERO ───────────────────────────────────────────────────────────────────
+const Hero = () => (
+  <section style={{
+    background: `linear-gradient(155deg,${T.navy} 0%,${T.navyMid} 55%,#082828 100%)`,
+    minHeight: "100vh", display: "flex", flexDirection: "column",
+    justifyContent: "center", padding: "110px 32px 64px",
+    position: "relative", overflow: "hidden",
+  }}>
+    <div style={{
+      position: "absolute", inset: 0, opacity: 0.03,
+      backgroundImage: `linear-gradient(${T.tealBrt} 1px,transparent 1px),linear-gradient(90deg,${T.tealBrt} 1px,transparent 1px)`,
+      backgroundSize: "52px 52px", pointerEvents: "none",
+    }} />
+    <div style={{
+      position: "absolute", top: "20%", right: "6%", width: 440, height: 440,
+      borderRadius: "50%", background: `radial-gradient(circle,${T.teal}18 0%,transparent 70%)`,
+      pointerEvents: "none",
+    }} />
+
+    <div style={{ maxWidth: 860, margin: "0 auto", position: "relative" }}>
+      {/* Alert badge */}
+      <div style={{
+        display: "inline-flex", alignItems: "center", gap: 8,
+        background: `${T.red}22`, border: `1px solid ${T.red}40`,
+        borderRadius: 4, padding: "5px 14px", marginBottom: 28,
+      }}>
+        <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.red, animation: "blink 2s infinite" }} />
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#FF9999", letterSpacing: "0.09em", textTransform: "uppercase" }}>
+          Data Breach Alert · Hong Kong Healthcare Sector
+        </span>
+      </div>
+
+      {/* Main title */}
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.tealBrt, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
+        PHPC Patient Portal
+      </div>
+
+      {/* Subtitle */}
+      <h1 style={{ fontSize: "clamp(28px,4vw,52px)", fontWeight: 900, color: T.white, lineHeight: 1.12, letterSpacing: "-0.025em", marginBottom: 20 }}>
+        Secure Your Practice.<br />
+        <span style={{ color: T.tealBrt }}>Protect Your Patients.</span>
+      </h1>
+
+      {/* Breach hook */}
+      <div style={{ borderLeft: `4px solid ${T.red}`, paddingLeft: 18, marginBottom: 28 }}>
+        <p style={{ fontSize: 18, fontWeight: 700, color: "#FFD0D0", lineHeight: 1.55, margin: "0 0 6px" }}>
+          100,000 patients. A private clinic group. May 2023.<br />
+          56,000 patients. A public hospital. April 2026.
+        </p>
+        <p style={{ fontSize: 15, color: "#8BAAB8", lineHeight: 1.7, margin: 0 }}>
+          One external cyberattack. One insider with authorised access.<br />
+          Different methods — identical outcome.<br />
+          <strong style={{ color: T.white }}>Patient data, exposed. In Hong Kong. Right now.</strong>
+        </p>
+      </div>
+
+      <p style={{ fontSize: 15, color: "#7A9AAA", lineHeight: 1.8, maxWidth: 600, marginBottom: 36 }}>
+        Private practice is not protected by being private. Your patients' data is only as safe as the people — and systems — that handle it. What happens when that is no longer good enough?
+      </p>
+
+      {/* CTAs */}
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 52 }}>
+        <button onClick={() => scrollTo("reality")} style={{
+          background: T.teal, color: "#fff", border: "none", borderRadius: 8,
+          padding: "14px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer",
+          boxShadow: `0 4px 20px ${T.teal}50`, transition: "all 0.2s",
+        }}
+          onMouseEnter={e => e.currentTarget.style.background = T.tealBrt}
+          onMouseLeave={e => e.currentTarget.style.background = T.teal}
+        >See The PHPC Standard ↓</button>
+        <button onClick={() => scrollTo("pilot")} style={{
+          background: "transparent", color: T.white, border: "1px solid #ffffff40",
+          borderRadius: 8, padding: "14px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+        }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#ffffff10"; e.currentTarget.style.borderColor = "#ffffff70"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "#ffffff40"; }}
+        >Become a Pilot Partner →</button>
+      </div>
+
+      {/* Stat strip */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: "1px solid #ffffff10", paddingTop: 28, gap: 0 }}>
+        {[
+          { n: "217", l: "Breach notifications\nto PCPD in 2024" },
+          { n: "6×", l: "PCPD enforcement reports\n2023 → 2024" },
+          { n: "HK$10M", l: "Max fine under\nPDPO amendments" },
+          { n: "Oct 2025", l: "Clinic licence regime\nnow in force" },
+        ].map((s, i) => (
+          <div key={i} style={{ paddingRight: 20, borderRight: i < 3 ? "1px solid #ffffff10" : "none", paddingLeft: i > 0 ? 20 : 0 }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: T.tealBrt, marginBottom: 5 }}>{s.n}</div>
+            <div style={{ fontSize: 10, color: "#5A7888", lineHeight: 1.6, whiteSpace: "pre-line" }}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ASL trust strip */}
+      <div style={{ marginTop: 24, display: "inline-flex", alignItems: "center", gap: 10, background: "#ffffff08", border: "1px solid #ffffff12", borderRadius: 6, padding: "8px 16px" }}>
+        <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.tealBrt, flexShrink: 0 }} />
+        <span style={{ fontSize: 11, color: "#7A9AAA", lineHeight: 1.5 }}>
+          <span style={{ color: "#C0D8E0", fontWeight: 700 }}>Platform Operator:</span>{" "}
+          A HKEx-listed Hong Kong IT company with 50+ years of government healthcare infrastructure experience, including foundational work on the HA Go platform.
+        </span>
+      </div>
+    </div>
+    <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
+  </section>
+);
+
+// ── BURNING REALITY ────────────────────────────────────────────────────────
+const Reality = () => (
+  <section id="reality" style={{ background: T.white, padding: "80px 32px" }}>
+    <div style={{ maxWidth: 1050, margin: "0 auto" }}>
+      <Fade>
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: T.teal, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>燃眉之急 · The Burning Reality</div>
+          <h2 style={{ fontSize: 32, fontWeight: 900, color: T.ink, marginBottom: 14, letterSpacing: "-0.02em" }}>
+            The PHPC Standard<br />
+            <span style={{ fontSize: 18, fontWeight: 600, color: T.slate, letterSpacing: "0em" }}>Three events. Three years. One unavoidable conclusion.</span>
+          </h2>
+        </div>
+      </Fade>
+
+      {/* Timeline */}
+      <div style={{ position: "relative", marginBottom: 44 }}>
+        {/* Vertical line */}
+        <div style={{ position: "absolute", left: 120, top: 0, bottom: 0, width: 2, background: `linear-gradient(${T.red},${T.amber},${T.teal})`, zIndex: 0 }} />
+
+        {[
+          {
+            date: "May 2023", color: T.red, icon: "🏥",
+            title: "Major Private Clinic Group Data Incident",
+            cn: "私家診所數據事故",
+            body: "Personal data and medical history of approximately 100,000 patients from a leading private healthcare group were compromised due to a vulnerability in their clinic management system. An external cyberattack exposed patient records including personal information and full medical history.",
+            src: "https://www.scmp.com/news/hong-kong/health-environment/article/3219827/personal-data-medical-history-100000-patients-may-have-been-leaked-cyberattack-hong-kong-healthcare",
+            srcLabel: "Source: SCMP ↗",
+            tag: "PRIVATE SECTOR · 100,000 Patients",
+          },
+          {
+            date: "Oct 2025", color: T.amber, icon: "⚖️",
+            title: "Clinic Licensing Requirements Take Effect",
+            cn: "診所發牌制度生效",
+            body: "All private clinics must apply for a licence under Cap. 633 (Private Healthcare Facilities Ordinance). CMEs must demonstrate robust patient data security and privacy practices during DH on-site inspections. Failure to comply is a criminal offence.",
+            src: "https://www.orphf.gov.hk/en/regulatory_regime/new_licensing_scheme",
+            srcLabel: "Source: ORPHF ↗",
+            tag: "REGULATORY MILESTONE · Cap. 633",
+          },
+          {
+            date: "Apr 2026", color: T.teal, icon: "🏛",
+            title: "Hospital Authority Kowloon East Breach",
+            cn: "醫管局九龍東聯網數據外洩",
+            body: "Over 56,000 patient records from the Kowloon East Cluster were leaked, including names, HKID numbers, and surgical procedure details. An insider with authorised system access downloaded records in violation of contract. Data was posted to the dark web and accessed over 8,000 times. One arrest under 不誠實使用電腦 — dishonest use of computer.",
+            src: "https://www.info.gov.hk/gia/general/202604/04/P2026040400462.htm",
+            srcLabel: "Source: HK Gov / HA ↗",
+            tag: "PUBLIC SECTOR · 56,000 Patients",
+          },
+        ].map((ev, i) => (
+          <Fade key={i} delay={i * 0.12}>
+            <div style={{ display: "flex", gap: 0, marginBottom: 32, position: "relative", zIndex: 1 }}>
+              {/* Date column */}
+              <div style={{ width: 108, flexShrink: 0, textAlign: "right", paddingRight: 20, paddingTop: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: ev.color }}>{ev.date}</div>
+              </div>
+              {/* Dot */}
+              <div style={{ width: 24, flexShrink: 0, display: "flex", alignItems: "flex-start", justifyContent: "center", paddingTop: 6 }}>
+                <div style={{ width: 14, height: 14, borderRadius: "50%", background: ev.color, border: `3px solid ${T.white}`, boxShadow: `0 0 0 2px ${ev.color}`, flexShrink: 0 }} />
+              </div>
+              {/* Card */}
+              <div style={{ flex: 1, paddingLeft: 20 }}>
+                <div style={{ background: T.white, border: `1px solid ${T.border}`, borderLeft: `4px solid ${ev.color}`, borderRadius: 10, padding: "18px 22px", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 9, fontWeight: 800, color: ev.color, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>{ev.tag}</div>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: T.ink, lineHeight: 1.25, marginBottom: 3 }}>{ev.title}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: ev.color }}>{ev.cn}</div>
+                    </div>
+                    <span style={{ fontSize: 28, flexShrink: 0, marginLeft: 12 }}>{ev.icon}</span>
+                  </div>
+                  <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.7, margin: "10px 0 8px" }}>{ev.body}</p>
+                  <SrcLink href={ev.src} label={ev.srcLabel} />
+                </div>
+              </div>
+            </div>
+          </Fade>
+        ))}
+      </div>
+
+      {/* CME Duty box */}
+      <Fade delay={0.3}>
+        <div style={{ background: T.navy, borderRadius: 12, padding: "26px 30px", display: "grid", gridTemplateColumns: "auto 1fr", gap: 24, alignItems: "start" }}>
+          <div style={{ fontSize: 36 }}>⚕️</div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: T.tealBrt, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>CME's Personal Duty · 醫務主管的法律責任</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: T.white, marginBottom: 10 }}>Chief Medical Executive — Personal Accountability Under Cap. 633</div>
+            <p style={{ fontSize: 14, color: "#8BAAB8", lineHeight: 1.75, margin: "0 0 10px" }}>
+              Under the Private Healthcare Facilities Ordinance (Cap. 633), the CME holds specific legal responsibility for the clinic's day-to-day administration — including patient data security and privacy standards. During DH on-site inspections, the CME and clinical team must demonstrate concretely how sensitive patient information is protected.
+            </p>
+            <p style={{ fontSize: 14, color: "#8BAAB8", lineHeight: 1.75, margin: "0 0 10px" }}>
+              A verbal assurance that "staff are careful" is not a system. The PHPC Patient Portal gives the CME a documented, encrypted, auditable infrastructure to point to — before the inspector asks.
+            </p>
+            <SrcLink href="https://www.orphf.gov.hk/en/regulatory_regime/new_licensing_scheme" label="Source: ORPHF — New Licensing Scheme ↗" />
+          </div>
+        </div>
+      </Fade>
+    </div>
+  </section>
+);
+
+// ── 6 KEYS ─────────────────────────────────────────────────────────────────
+const KEYS = [
+  { en: "Data Security", cn: "數據安全", icon: "🔐", tag: "Cap. 633 · PDPO DPP4", tagline: "Encrypted by design. Auditable by default.", body: "Patient records, personal data, and health information move through an encrypted secure channel — never through messaging apps or staff hands. Every data access is logged and timestamped. When DH or PCPD asks, your answer is a system — not a verbal assurance." },
+  { en: "Patient Privacy", cn: "病人私隱保障", icon: "🧑", tag: "PDPO DPP6 · Patient Rights", tagline: "Their data belongs to them — and only them.", body: "Patient personal data — including photos, documents, and health information — is uploaded directly to an encrypted folder accessible only by the authorised doctor. No staff can view, forward, or screenshot. PDPO gives patients the right to access their own health data. This portal makes that a structural guarantee." },
+  { en: "Booking Accuracy", cn: "預約管理優化", icon: "📅", tag: "Operational · No-show Reduction", tagline: "Structured. Confirmed. No mis-keyed calls.", body: "Patients self-book through guided structured forms — correct service, correct doctor, correct slot. Automated reminders reduce no-shows. Booking data syncs directly to your clinic management system. No double entry. No verbal handoff. Booking errors handled before they happen." },
+  { en: "Operational Efficiency", cn: "診所營運效率", icon: "⚡", tag: "Front Desk · Clinic Manager", tagline: "Admin that handles itself.", body: "Routine enquiries, appointment reminders, post-care instructions, and repeat requests are automated. Frontline staff focus on patients in the clinic, not the phone queue. Especially powerful for chronic disease long-term follow-up patients whose repetitive admin consumes disproportionate staff time every day." },
+  { en: "Health Record Exchange", cn: "病歷安全傳遞", icon: "📋", tag: "eHRSS · Cap. 633 CoP", tagline: "Safe. Direct. No human middleman.", body: "Lab reports, imaging results, medication records, sick leave certificates, and receipts sync from the clinic management system to the patient portal — without staff handling at any point. Patients access their own documents directly. The audit trail is automatic. Aligned with the eHRSS Amendment Ordinance 2025." },
+  { en: "AI-Powered & Future-Ready Practice", cn: "AI 賦能 · 未來診所", icon: "🤖", tag: "Policy Address 2025 · GBA · eHealth+", tagline: "The government is building the highway. This is your on-ramp.", body: "The 2025 Policy Address committed to AI-assisted care, cross-border eHR sharing, and data standardisation across the GBA. A portal-connected practice is infrastructure-ready for AI-assisted triage, smart follow-up, and population health management — without requiring doctors to navigate the technology themselves." },
+];
+
+const KeysSection = () => {
+  const [open, setOpen] = useState(null);
+  return (
+    <section id="keys" style={{ background: T.mist, padding: "80px 32px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <Fade>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: T.teal, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>六大關鍵 · 6 Keys</div>
+            <h2 style={{ fontSize: 32, fontWeight: 900, color: T.ink, marginBottom: 12, letterSpacing: "-0.02em" }}>6 Keys to Unlock Private Practice</h2>
+            <p style={{ fontSize: 15, color: T.slate, maxWidth: 520, margin: "0 auto", lineHeight: 1.75 }}>A structured response to the compliance and operational challenges every licensed clinic in Hong Kong now faces. Tap any key to expand.</p>
+          </div>
+        </Fade>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+          {KEYS.map((k, i) => {
+            const active = open === i;
+            return (
+              <Fade key={i} delay={i * 0.07}>
+                <div onClick={() => setOpen(active ? null : i)} style={{
+                  background: active ? T.navy : T.white,
+                  border: `1px solid ${active ? KEY_C[i] : T.border}`,
+                  borderTop: `4px solid ${KEY_C[i]}`,
+                  borderRadius: 10, padding: "20px 18px", cursor: "pointer",
+                  transition: "all 0.25s",
+                  boxShadow: active ? `0 8px 28px ${KEY_C[i]}20` : "0 1px 4px rgba(0,0,0,0.04)",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                    <span style={{ fontSize: 26 }}>{k.icon}</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: KEY_C[i], background: KEY_C[i] + "18", border: `1px solid ${KEY_C[i]}30`, borderRadius: 3, padding: "2px 6px", letterSpacing: "0.04em", textTransform: "uppercase" }}>{k.tag}</span>
+                  </div>
+                  {/* Bilingual — equal weight */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: active ? T.white : T.ink, lineHeight: 1.2, marginBottom: 4 }}>{k.en}</div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: KEY_C[i], lineHeight: 1.2, letterSpacing: "0.02em" }}>{k.cn}</div>
+                  </div>
+                  <div style={{ fontSize: 12, fontStyle: "italic", color: active ? "#8BAAB8" : T.slateLight, lineHeight: 1.45, marginBottom: active ? 12 : 0 }}>{k.tagline}</div>
+                  {active && <p style={{ fontSize: 13.5, color: "#A0BCC8", lineHeight: 1.75, margin: 0, borderTop: "1px solid #ffffff12", paddingTop: 12 }}>{k.body}</p>}
+                  <div style={{ marginTop: 10, fontSize: 11, fontWeight: 600, color: KEY_C[i] }}>{active ? "▲ Close" : "▼ Learn more"}</div>
+                </div>
+              </Fade>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ── FEATURES ───────────────────────────────────────────────────────────────
+const Features = () => {
+  const [view, setView] = useState("clinic");
+  const items = [
+    {
+      icon: "📅", color: T.teal,
+      en: "No-shows, handled — before they happen", cn: "自助預約 · CMS 同步",
+      clinic: "Structured booking forms eliminate errors from phone or messaging-based bookings. Patient selections sync directly to your clinic management system — no double entry, no staff relay.",
+      patient: "Book, reschedule, or cancel at any hour without waiting on hold or sending a message.",
+    },
+    {
+      icon: "🔐", color: "#1A5F9A",
+      en: "Patient data reaches the doctor — never the front desk", cn: "病人個人資料直達醫生",
+      clinic: "Patient personal data — including personal photos, documents, and health information — flows directly into the clinic's encrypted folder. It never passes through staff devices or messaging channels. No forward risk. No screenshot risk. Full audit log.",
+      patient: "Share personal data and health information with your doctor privately and securely — no reception staff, no messaging apps.",
+    },
+    {
+      icon: "📋", color: T.green,
+      en: "Records in the patient's hands — without staff in the middle", cn: "病歷及文件查閱",
+      clinic: "Lab results, imaging reports, medication records, sick leave certificates, and receipts sync from your clinic management system to the patient portal. No staff handling. No printing. No forwarding. Zero-touch delivery.",
+      patient: "View your own records and download your sick leave certificate or receipt — anytime, on your phone.",
+    },
+    {
+      icon: "🔔", color: T.amber,
+      en: "Post-care follow-up — automated, logged, complete", cn: "自動提醒及通知",
+      clinic: "Appointment reminders, post-procedure instructions, and treatment schedules are sent automatically. Every notification is timestamped and logged. No staff action required — and no gap in the audit trail.",
+      patient: "Reminders and post-care instructions arrive when they should, without you having to ask.",
+    },
+    {
+      icon: "💬", color: T.purple,
+      en: "Patient communications — logged, unalterable, fully accountable", cn: "安全醫患通訊",
+      clinic: "Patient queries are logged securely in the system, bypassing the front desk entirely. No staff can read, intercept, or delete communications. The doctor reviews a complete, unalterable audit trail at their convenience — ensuring full accountability during DH inspections.",
+      patient: "Send questions to your clinic directly. Private. Secure. Permanently recorded for your protection.",
+    },
+    {
+      icon: "🏥", color: T.red,
+      en: "Your clinic, front and centre — to every registered patient", cn: "診所資訊及推廣",
+      clinic: "Branded clinic space: signature services, doctor profiles, health information, seasonal promotions — delivered directly to your registered patients. A marketing channel you own, independent of any messaging platform.",
+      patient: "Stay informed about your clinic's latest services and health information in one trusted, secure place.",
+    },
+  ];
+
+  return (
+    <section id="features" style={{ background: T.white, padding: "80px 32px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <Fade>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: T.teal, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>功能特點 · Features</div>
+            <h2 style={{ fontSize: 32, fontWeight: 900, color: T.ink, marginBottom: 18, letterSpacing: "-0.02em" }}>Solving the Human Factor</h2>
+            <p style={{ fontSize: 15, color: T.slate, maxWidth: 580, margin: "0 0 20px", lineHeight: 1.75 }}>
+              Reduce reliance on messaging channels. For patients who use the portal, sensitive data bypasses staff devices entirely. For those who don't, the risk remains — and that's exactly why adoption matters.
+            </p>
+            <div style={{ display: "inline-flex", background: T.mist, border: `1px solid ${T.border}`, borderRadius: 8, padding: 4, gap: 4 }}>
+              {[["clinic", "For the Clinic"], ["patient", "For the Patient"]].map(([v, l]) => (
+                <button key={v} onClick={() => setView(v)} style={{
+                  padding: "8px 22px", borderRadius: 6, border: "none", cursor: "pointer",
+                  fontSize: 13, fontWeight: 700, transition: "all 0.2s",
+                  background: view === v ? T.teal : "transparent",
+                  color: view === v ? "#fff" : T.slate,
+                  boxShadow: view === v ? `0 2px 8px ${T.teal}30` : "none",
+                }}>{l}</button>
+              ))}
+            </div>
+          </div>
+        </Fade>
+
+        {/* Messaging channel risk callout */}
+        <Fade delay={0.05}>
+          <div style={{ background: T.redDim, border: `1px solid ${T.red}25`, borderLeft: `4px solid ${T.red}`, borderRadius: 8, padding: "14px 20px", marginBottom: 24, display: "flex", gap: 14, alignItems: "flex-start" }}>
+            <span style={{ fontSize: 22, flexShrink: 0 }}>⚠️</span>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.red, marginBottom: 4 }}>The Messaging Channel Risk — Right Now in Your Clinic</div>
+              <p style={{ fontSize: 13, color: "#7A2020", margin: 0, lineHeight: 1.65 }}>
+                Most clinics maintain a registered business mobile number for WhatsApp and WeChat — listed publicly on Google, promotional pages, and SEM campaigns. Patients use these to send personal photos, identity documents, health history, and sensitive health information daily. These messages are unencrypted, have no access control, no audit trail, and no deletion protection. Any staff member with access to that device holds your patients' most sensitive data.
+              </p>
+            </div>
+          </div>
+        </Fade>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+          {items.map((f, i) => (
+            <Fade key={i} delay={i * 0.07}>
+              <div style={{ background: T.mist, borderRadius: 10, border: `1px solid ${T.border}`, borderLeft: `4px solid ${f.color}`, padding: "20px 18px" }}>
+                <div style={{ fontSize: 24, marginBottom: 10 }}>{f.icon}</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: T.ink, marginBottom: 3, lineHeight: 1.3 }}>{f.en}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: f.color, marginBottom: 12 }}>{f.cn}</div>
+                <p style={{ fontSize: 13.5, color: T.slate, lineHeight: 1.75, margin: 0 }}>{view === "clinic" ? f.clinic : f.patient}</p>
+              </div>
+            </Fade>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ── INFRASTRUCTURE ─────────────────────────────────────────────────────────
+const Infra = () => (
+  <section id="infra" style={{ background: T.navy, padding: "80px 32px" }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <Fade>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: T.tealBrt, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>可信基礎設施 · Trusted Infrastructure</div>
+          <h2 style={{ fontSize: 32, fontWeight: 900, color: T.white, marginBottom: 14, letterSpacing: "-0.02em" }}>The PHPC Solution — Powered by ASL</h2>
+          <p style={{ fontSize: 15, color: "#7A9AAA", maxWidth: 600, margin: "0 auto", lineHeight: 1.8 }}>
+            Developed and operated by a HKEx-listed Hong Kong IT company with 50+ years of government healthcare infrastructure experience — the same organisation that contributed foundational infrastructure to the HA Go platform and serves the Department of Health, Hospital Authority, and Centre for Health Protection.
+          </p>
+        </div>
+      </Fade>
+
+      {/* Data flow */}
+      <Fade delay={0.1}>
+        <div style={{ background: "#060F1C", borderRadius: 12, padding: "30px 24px", marginBottom: 24, border: "1px solid #ffffff08" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.tealBrt, textTransform: "uppercase", letterSpacing: "0.1em", textAlign: "center", marginBottom: 22 }}>How Patient Data Flows — Securely · 病人資料安全傳遞流程</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 36px 1fr 36px 1fr 36px 1fr", alignItems: "center" }}>
+            {[
+              { icon: "🧑", label: "Patient", sub: "病人", items: ["Books appointment", "Uploads personal data", "Views own records", "Downloads documents"] },
+              null,
+              { icon: "🔐", label: "PHPC Portal", sub: "安全門戶", highlight: true, items: ["AES-256 encryption", "Role-based access control", "Full audit trail", "Zero business data collected"] },
+              null,
+              { icon: "🏛", label: "Platform Operator (ASL)", sub: "平台營運商", items: ["DevSecOps infrastructure", "eHRSS connectivity", "DH / HA / CHP experience", "HA Go contributor"] },
+              null,
+              { icon: "👨‍⚕️", label: "Doctor / Clinic", sub: "醫生 / 診所", items: ["Encrypted data inbox", "Patient record access", "Secure message log", "CMS sync — no staff touch"] },
+            ].map((item, i) => {
+              if (!item) return (
+                <div key={i} style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 18, color: T.teal }}>→</div>
+                  <div style={{ fontSize: 8, color: "#2A4050", marginTop: 2, lineHeight: 1.4 }}>encrypted</div>
+                </div>
+              );
+              return (
+                <div key={i} style={{
+                  background: item.highlight ? `linear-gradient(135deg,${T.teal}28,${T.tealBrt}18)` : "#0A1E30",
+                  border: item.highlight ? `1px solid ${T.teal}50` : "1px solid #ffffff08",
+                  borderRadius: 8, padding: "14px 12px", textAlign: "center",
+                }}>
+                  <div style={{ fontSize: 26, marginBottom: 6 }}>{item.icon}</div>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: item.highlight ? T.tealBrt : T.white, marginBottom: 1 }}>{item.label}</div>
+                  <div style={{ fontSize: 9, color: "#4A6878", marginBottom: 8 }}>{item.sub}</div>
+                  {item.items.map(t => (
+                    <div key={t} style={{ fontSize: 9, color: item.highlight ? "#7ECFDA" : "#3A5464", background: "#ffffff06", borderRadius: 3, padding: "2px 5px", marginBottom: 3, border: "1px solid #ffffff06" }}>{t}</div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 16, fontSize: 11, color: "#2A4050", fontStyle: "italic" }}>
+            Patient personal data never passes through staff devices, WhatsApp, or WeChat at any point in this flow.
+          </div>
+        </div>
+      </Fade>
+
+      {/* Credential strip */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 20 }}>
+        {[
+          { icon: "🏛", title: "HKEx Listed", desc: "Publicly accountable and regulated, with 50+ years of Hong Kong technology operations" },
+          { icon: "🏥", title: "Government Healthcare IT", desc: "Serving the Department of Health, Hospital Authority, and Centre for Health Protection" },
+          { icon: "📱", title: "HA Go Infrastructure", desc: "Foundational platform infrastructure contributor to Hong Kong's public health super-app" },
+          { icon: "🔒", title: "Enterprise DevSecOps", desc: "Development, Security, and Operations integrated — government-standard, enterprise-grade" },
+        ].map((c, i) => (
+          <Fade key={i} delay={i * 0.07}>
+            <div style={{ background: "#0A1E30", borderRadius: 8, padding: "18px 16px", border: "1px solid #ffffff08", borderTop: `3px solid ${T.teal}` }}>
+              <div style={{ fontSize: 24, marginBottom: 10 }}>{c.icon}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.white, marginBottom: 6 }}>{c.title}</div>
+              <p style={{ fontSize: 12.5, color: "#4A6878", lineHeight: 1.65, margin: 0 }}>{c.desc}</p>
+            </div>
+          </Fade>
+        ))}
+      </div>
+
+      {/* BI boundary */}
+      <Fade delay={0.25}>
+        <div style={{ background: "#060F1C", borderRadius: 10, border: "1px solid #ffffff07", padding: "18px 24px", display: "flex", gap: 14, alignItems: "flex-start" }}>
+          <span style={{ fontSize: 22, flexShrink: 0 }}>🚧</span>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 14, color: T.tealBrt, marginBottom: 6 }}>Data Boundary — Explicit by Design · 數據邊界設計</div>
+            <p style={{ fontSize: 13, color: "#4A6878", margin: 0, lineHeight: 1.75 }}>
+              The PHPC Patient Portal is a <strong style={{ color: "#8BAAB8" }}>patient access layer</strong>, not a data intelligence platform. It does not collect, store, or analyse any commercial data about the clinic — no revenue figures, no pricing, no patient spending patterns, no clinical performance metrics. Business intelligence is generated solely from the clinic's own management system, which the clinic owns entirely.
+              <strong style={{ color: "#8BAAB8" }}> The portal lets patients see their data. It does not let us see your business.</strong>
+            </p>
+          </div>
+        </div>
+      </Fade>
+    </div>
+  </section>
+);
+
+// ── WHO IT'S FOR ──────────────────────────────────────────────────────────
+const WHO = [
+  { role: "Business Owner / Doctor", cn: "診所東主 · 醫生", icon: "👨‍⚕️", gets: ["Auditable patient data system — demonstrable to DH and PCPD on demand", "Patient connection maintained at professional distance — no personal over-commitment", "Visibility on booking patterns, no-show rates, and clinic activity", "Branded marketing channel reaching registered patients directly"] },
+  { role: "CME", cn: "醫務主管", icon: "⚕️", gets: ["Cap. 633 compliance — records kept secure by infrastructure, not staff discretion", "Documented, auditable patient touchpoints ready for DH inspection at any time", "PDPO-compliant data architecture ahead of mandatory breach notification (~2026)", "Complete communication logs — unalterable, timestamped, inspection-ready"] },
+  { role: "Clinic Manager", cn: "診所經理", icon: "📋", gets: ["Automated reminders cut no-shows — no staff calling required", "Routine patient enquiries handled by the portal, not the front desk", "Multi-clinic patient records unified under one system", "Frontline team focused on in-clinic care, not phone and admin"] },
+  { role: "Frontline Team", cn: "前線員工", icon: "🧑‍💻", gets: ["Repetitive booking calls and enquiries handled automatically", "No longer responsible for safeguarding data they were never trained to protect", "Focus on the patients in front of you — not the inbox", "Personal risk exposure reduced alongside the clinic's compliance position"] },
+  { role: "Patient", cn: "病人", icon: "🧑", gets: ["Own records, lab results, and documents — anytime, on your phone", "Encrypted private channel for personal data and health information — doctor-only access", "Book, reschedule, or cancel without waiting on hold or sending messages", "Confidence that your most sensitive personal data is protected by design"] },
+];
+
+const WhoSection = () => {
+  const [sel, setSel] = useState(0);
+  const w = WHO[sel]; const c = ROLE_C[sel];
+  return (
+    <section id="who" style={{ background: T.mist, padding: "80px 32px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <Fade>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: T.teal, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>適用對象 · Who It Serves</div>
+            <h2 style={{ fontSize: 32, fontWeight: 900, color: T.ink, marginBottom: 12, letterSpacing: "-0.02em" }}>One platform. Value for every role.</h2>
+          </div>
+        </Fade>
+        <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap", justifyContent: "center" }}>
+          {WHO.map((item, i) => (
+            <button key={i} onClick={() => setSel(i)} style={{
+              padding: "10px 18px", borderRadius: 7, cursor: "pointer",
+              border: `2px solid ${sel === i ? ROLE_C[i] : T.border}`,
+              background: sel === i ? ROLE_C[i] : T.white,
+              color: sel === i ? "#fff" : T.slate,
+              fontSize: 13, fontWeight: 700, transition: "all 0.2s",
+            }}>{item.icon} {item.role}</button>
+          ))}
+        </div>
+        <Fade>
+          <div style={{ background: T.white, borderRadius: 12, border: `1px solid ${T.border}`, borderLeft: `6px solid ${c}`, padding: "30px 34px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+            <div>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>{w.icon}</div>
+              <div style={{ fontSize: 24, fontWeight: 900, color: T.ink, marginBottom: 4 }}>{w.role}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: c, marginBottom: 18 }}>{w.cn}</div>
+              <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.8, margin: 0 }}>Every role in the clinic — and every patient — receives specific, tangible value. The portal handles what no human should have to manage manually.</p>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: c, textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 16 }}>What they gain</div>
+              {w.gets.map((g, i) => (
+                <div key={i} style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: c + "18", border: `1px solid ${c}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
+                  </div>
+                  <span style={{ fontSize: 14, color: T.slate, lineHeight: 1.65 }}>{g}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Fade>
+      </div>
+    </section>
+  );
+};
+
+// ── PILOT ─────────────────────────────────────────────────────────────────
+const Pilot = () => (
+  <section id="pilot" style={{ background: T.white, padding: "80px 32px" }}>
+    <div style={{ maxWidth: 1050, margin: "0 auto" }}>
+      <Fade>
+        <div style={{ textAlign: "center", marginBottom: 44 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: T.teal, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>試點夥伴計劃 · Pilot Partner Programme</div>
+          <h2 style={{ fontSize: 32, fontWeight: 900, color: T.ink, marginBottom: 12, letterSpacing: "-0.02em" }}>Strengthen Your DH Readiness.<br />At No Extra Cost.</h2>
+          <p style={{ fontSize: 15, color: T.slate, maxWidth: 580, margin: "0 auto", lineHeight: 1.8 }}>
+            Be among the first clinics to implement the PHPC Patient Portal — and strengthen your readiness for DH on-site inspections with proven data security and privacy infrastructure.
+          </p>
+        </div>
+      </Fade>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginBottom: 28 }}>
+        {[
+          { title: "What the clinic contributes", color: T.teal, items: ["One designated frontline contact who understands your booking and clinic workflow", "Workflow access for requirements mapping — without disrupting daily operations", "Participation in structured feedback sessions during the build phase", "Commitment to soft launch at one designated clinic branch by agreed date"] },
+          { title: "What the clinic receives", color: T.amber, items: ["Portal tailored to your specialty and clinical workflow — not a generic template", "Flexible implementation: customise your clinic's workflow without development costs", "Seamless integration with your existing clinic management system", "First 6 months subscription fully waived — for all Pilot Partners"] },
+        ].map((col, i) => (
+          <Fade key={i} delay={i * 0.1}>
+            <div style={{ background: T.mist, borderRadius: 10, padding: "22px 24px", border: `1px solid ${T.border}`, borderTop: `4px solid ${col.color}` }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: col.color, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.08em" }}>{col.title}</div>
+              {col.items.map((it, j) => (
+                <div key={j} style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "flex-start" }}>
+                  <span style={{ color: col.color, fontWeight: 900, fontSize: 16, lineHeight: 1, flexShrink: 0 }}>→</span>
+                  <span style={{ fontSize: 14, color: T.slate, lineHeight: 1.65 }}>{it}</span>
+                </div>
+              ))}
+            </div>
+          </Fade>
+        ))}
+      </div>
+
+      {/* Timeline */}
+      <Fade delay={0.15}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 28 }}>
+          {[
+            { phase: "Now → Q1 2026", label: "Requirements", icon: "🗺️", detail: "Workflow mapping with your designated contact. Service list, booking rules, and CMS integration scoped to your clinic." },
+            { phase: "Q2 2026", label: "Build & Integrate", icon: "⚙️", detail: "CMS integration. Portal built to your workflow. Encrypted patient data channel configured and tested." },
+            { phase: "Q3 2026", label: "Testing & Onboarding", icon: "🧪", detail: "Staff briefed. Patient cohort identified. Real-user testing before full launch." },
+            { phase: "Q4 2026", label: "Launch", icon: "🚀", detail: "Live at your clinic. Pilot Partner recognition. Ongoing support included for the full first 6 months." },
+          ].map((t, i) => (
+            <div key={i} style={{ background: T.mist, borderRadius: 8, padding: "18px 16px", border: `1px solid ${T.border}`, borderTop: `3px solid ${T.teal}` }}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>{t.icon}</div>
+              <div style={{ fontSize: 11, color: T.teal, fontWeight: 700, marginBottom: 4 }}>{t.phase}</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: T.ink, marginBottom: 8 }}>{t.label}</div>
+              <p style={{ fontSize: 12.5, color: T.slate, margin: 0, lineHeight: 1.6 }}>{t.detail}</p>
+            </div>
+          ))}
+        </div>
+      </Fade>
+
+      {/* CTA */}
+      <Fade delay={0.2}>
+        <div style={{ background: T.navy, borderRadius: 12, padding: "30px 34px", textAlign: "center" }}>
+          <h3 style={{ fontSize: 22, fontWeight: 800, color: T.white, marginBottom: 10 }}>Ready to talk? We'll come to you.</h3>
+          <p style={{ fontSize: 14, color: "#7A9AAA", marginBottom: 24, lineHeight: 1.75 }}>
+            A 1-hour introduction at your clinic, at your convenience.<br />
+            No commitment required to learn more. Pilot Partners receive the first 6 months subscription fully waived.
+          </p>
+          <a href="mailto:IrisPhpc@gmail.com?subject=PHPC Patient Portal — Pilot Partner Enquiry" style={{
+            display: "inline-block", background: T.teal, color: "#fff",
+            borderRadius: 8, padding: "14px 34px", fontSize: 15, fontWeight: 700,
+            textDecoration: "none", boxShadow: `0 4px 20px ${T.teal}50`,
+          }}>Express Interest → IrisPhpc@gmail.com</a>
+        </div>
+      </Fade>
+    </div>
+  </section>
+);
+
+// ── ABOUT ─────────────────────────────────────────────────────────────────
+const About = () => (
+  <section id="about" style={{ background: T.mist, padding: "72px 32px" }}>
+    <div style={{ maxWidth: 960, margin: "0 auto" }}>
+      <Fade>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 52, alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: T.teal, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 }}>關於我們 · About PHPC</div>
+            <h2 style={{ fontSize: 28, fontWeight: 900, color: T.ink, marginBottom: 18, letterSpacing: "-0.02em", lineHeight: 1.2 }}>Built from inside Hong Kong's private healthcare sector.</h2>
+            <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.85, marginBottom: 14 }}>
+              PHPC was founded on a straightforward observation: Hong Kong's private healthcare sector has world-class doctors operating without the digital infrastructure their patients increasingly expect — and regulators now require.
+            </p>
+            <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.85, marginBottom: 14 }}>
+              The Patient Portal is the product of that insight — initiated and shaped by a team with over 20 years of combined frontline experience across Hong Kong's private clinic and medical group sector, spanning business development, clinic operations, patient experience, and regulatory compliance.
+            </p>
+            <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.85, marginBottom: 14 }}>
+              The programme is advised by a formed group of senior healthcare practitioners dedicated to serving the private sector, ensuring every feature reflects real clinical workflows, not assumptions.
+            </p>
+            <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.85 }}>
+              The platform is developed and operated by a HKEx-listed Hong Kong IT company with 50+ years of government healthcare infrastructure experience — the same organisation that contributed foundational infrastructure to the HA Go platform.
+            </p>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {[
+              { n: "20+", l: "Years of combined frontline HK private healthcare experience — the insight behind the design" },
+              { n: "Senior Practitioners", l: "Advised by a formed group of experienced HK private healthcare professionals across clinical, operational, and compliance disciplines" },
+              { n: "50+", l: "Years of government healthcare IT infrastructure from the platform operator — the security behind the system" },
+              { n: "Q4 2026", l: "Target market launch — Pilot Partner programme now open" },
+              { n: "0", l: "Business intelligence collected from your clinic — explicit by design and by contract" },
+            ].map((s, i) => (
+              <div key={i} style={{ background: T.white, borderRadius: 8, border: `1px solid ${T.border}`, padding: "14px 18px", display: "flex", gap: 16, alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontSize: 15, fontWeight: 900, color: T.teal, minWidth: 80, flexShrink: 0, lineHeight: 1.2 }}>{s.n}</div>
+                <div style={{ fontSize: 13, color: T.slate, lineHeight: 1.6 }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Fade>
+    </div>
+  </section>
+);
+
+// ── FOOTER ────────────────────────────────────────────────────────────────
+const Footer = () => (
+  <footer style={{ background: T.navy, padding: "40px 32px 20px", borderTop: `1px solid #ffffff08` }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 32, marginBottom: 32, flexWrap: "wrap" }}>
+        <div>
+          <Logo size={1} />
+          <p style={{ fontSize: 13, color: "#3A5060", marginTop: 12, maxWidth: 280, lineHeight: 1.75 }}>
+            Secure Your Practice. Protect Your Patients.<br />
+            <span style={{ fontSize: 12, color: "#2A3C48" }}>安全連接病人與私家醫生的健康平台</span>
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.tealBrt, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>Navigation</div>
+            {["The Burning Reality", "6 Keys", "Features", "Infrastructure", "Who It's For", "Pilot Programme", "About"].map(l => (
+              <div key={l} style={{ fontSize: 13, color: "#3A5060", marginBottom: 8 }}>{l}</div>
+            ))}
+          </div>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.tealBrt, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>Pilot Enquiries</div>
+            <div style={{ fontSize: 13, color: "#5A7080", marginBottom: 6 }}>Patient Portal Programme</div>
+            <a href="mailto:IrisPhpc@gmail.com" style={{ fontSize: 13, color: T.tealBrt, display: "block", marginBottom: 16, textDecoration: "none" }}>IrisPhpc@gmail.com</a>
+            <div style={{ width: 80, height: 80, border: `2px dashed #1A3040`, borderRadius: 6, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#040A10", gap: 5 }}>
+              <span style={{ fontSize: 22 }}>📱</span>
+              <span style={{ fontSize: 7.5, color: "#2A4050", textAlign: "center", lineHeight: 1.4 }}>QR Code<br />Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ borderTop: "1px solid #ffffff06", paddingTop: 16, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+        <div style={{ fontSize: 10, color: "#1E3040" }}>© PHPC Patient Portal Programme 2025 · Confidential · Not for redistribution</div>
+        <div style={{ fontSize: 10, color: "#1E3040" }}>Regulatory references based on publicly available HK legislation · Private organisation names withheld where applicable</div>
+      </div>
+    </div>
+  </footer>
+);
+
+// ── APP ────────────────────────────────────────────────────────────────────
+export default function App() {
+  return (
+    <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", background: T.white }}>
+      <Nav />
+      <Hero />
+      <Reality />
+      <KeysSection />
+      <Features />
+      <Infra />
+      <WhoSection />
+      <Pilot />
+      <About />
+      <Footer />
+    </div>
+  );
+}
